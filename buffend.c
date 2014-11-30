@@ -679,6 +679,7 @@ column * excluirTuplaBuffer(tp_buffer *buffer, tp_table *campos, struct fs_objec
 		colunas[j].valorCampo = (char *)malloc(sizeof(char)*campos[j].tam); //Aloca a quantidade necessária para cada campo
 		colunas[j].tipoCampo = campos[j].tipo;	// Guarda o tipo do campo
 		strcpy(colunas[j].nomeCampo, campos[j].nome); 	//Guarda o nome do campo
+		colunas[j].tp_Chave = campos[j].tp_Chave;
 	
 		while(t < campos[j].tam){
 			colunas[j].valorCampo[t] = buffer[page].data[i];	//Copia os dados
@@ -721,6 +722,7 @@ column * getPage(tp_buffer *buffer, tp_table *campos, struct fs_objects objeto, 
 		colunas[h].valorCampo = (char *)malloc(sizeof(char)*campos[j].tam);
 		colunas[h].tipoCampo = campos[j].tipo;	//Guarda tipo do campo
 		strcpy(colunas[h].nomeCampo, campos[j].nome); //Guarda nome do campo
+		colunas[j].tp_Chave = campos[j].tp_Chave;
 		
 		while(t < campos[j].tam){
 			colunas[h].valorCampo[t] = buffer[page].data[i]; //Copia os dados
@@ -831,6 +833,77 @@ int insere(column *c, char *nomeCampo, char *valorCampo, tipoChave *tpChave){
 }
 
 int verificaValor(char *nomeTabela, char *nomeCampo, char *valor){
-	
+	int aux, retorno;
+	//verifica inicialmente se existe alguma tabela com este nome
+	if (verificaNomeTabela(nomeTabela) == 1)
+	{
+		struct fs_objects objeto = leObjeto(nomeTabela[1]);	
+		tp_table *esquema = leSchema(objeto);
+
+		if(esquema == ERRO_ABRIR_ESQUEMA){
+			return ERRO_ABRIR_ESQUEMA;
+		}
+
+		tp_buffer *bufferpoll = initbuffer();
+		if(bufferpoll == ERRO_DE_ALOCACAO){
+			return ERRO_DE_ALOCACAO;
+		}
+
+		retorno = colocaTuplaBuffer(bufferpoll, 0, esquema, objeto);
+		if(retorno != SUCCESS){
+			return ERRO_COLOCA_TUPLA_BUFFER;
+		}
+
+		column *pagina = getPage(bufferpoll, esquema, objeto, 0);
+		if(pagina == ERRO_PARAMETRO){
+			return ERRO_PARAMETRO;
+		}
+		//percore a lista de campos para ver se o nome do atributo é existente, se ele existir retornará SUCESS
+		for(aux=0; aux < objeto.qtdCampos; aux++){
+			if(pagina[aux].nomeCampo[TAMANHO_NOME_CAMPO] != nomeCampo){
+				return ERRO_VALOR_NAO_EXISTENTE;
+			}else{
+				for(int j=0; j < objeto.qtdCampos*bufferpoll[0].nrec; j++){
+				if(pagina[j].tipoCampo == 'S')
+					if (pagina[j].valorCampo == valor)
+					{
+						return SUCCESS;
+					}else{
+						return ERRO_VALOR_INEXISTENTE;
+					}
+				else if(pagina[j].tipoCampo == 'I'){
+					int *auxInt = (int *)&pagina[j].valorCampo[0];
+					if (*auxInt == valor)
+					{
+						return SUCCESS;
+					}else{
+						return ERRO_VALOR_INEXISTENTE;
+					}
+				}
+				else if(pagina[j].tipoCampo == 'C'){
+					if (pagina[j].valorCampo[0] == valor)
+					{
+						return SUCCESS;
+					}else{
+						return ERRO_VALOR_INEXISTENTE;
+					}
+				}
+				else if(pagina[j].tipoCampo == 'D'){
+					double *auxDou = (double *)&pagina[j].valorCampo[0];
+					printf("%s: %f ",pagina[j].nomeCampo, *n);
+					if (*auxInt == valor)
+					{
+						return SUCCESS;
+					}else{
+						return ERRO_VALOR_INEXISTENTE;
+					}
+				}
+
+			}
+		}	
+	}else
+	{
+		return ERRO_TABELA_INEXISTENTE;
+	}
 }
 
