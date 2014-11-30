@@ -17,8 +17,7 @@ struct fs_objects leObjeto(char *nTabela){
 	if (dicionario == NULL)	{
 		printf("Erro GRAVE! na função leObjeto(). Arquivo não encontrado.\nAbortando...\n\n");
 		exit(1);
-	}
-	
+    }
 
 	while(fgetc (dicionario) != EOF){
         fseek(dicionario, -1, 1);

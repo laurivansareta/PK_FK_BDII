@@ -18,17 +18,10 @@ Sobre o dicionário de dados e o esquema:
 		int qtdCampos;
 	};
 
-	struct tipoChave {
-	int tpChave;	
-	char nomeTabelaF[TAMANHO_NOME_TABELA];		
-	char nomeCampoF[TAMANHO_NOME_CAMPO];
-	}tipoChave;
-
 	typedef struct tp_table{ // Estrutura usada para carregar fs_schema.dat
 		char nome[TAMANHO_NOME_CAMPO];	
 		char tipo;						
-		int tam;		
-		struct tipoChave tp_Chave;				
+		int tam;						
 		struct tp_table *next;	
 	}tp_table;
 
@@ -54,7 +47,7 @@ Sobre a criação e inserção em tabelas:
 		table *t = NULL;
 		t = iniciaTabela("Pessoa");
 
-	A partir da iniciação da tabela, pode-se adicionar os campos utilizando a função adicionaCampo(*t, nomeCampo, tipoCampo, tamanhoCampo):
+	A partir da iniciação da tabela, pode-se adicionar os campos utilizando a função adicionaCampo(t, nomeCampo, tipoCampo, tamanhoCampo):
 
 		t = adicionaCampo(t, "Nome", 'S', 20); // Cria um campo de nome 'Nome' do tipo string e de tamanho 20
 		t = adicionaCampo(t, "Idade", 'I', 4); // Cria um campo de nome 'Idade' do tipo inteiro e de tamanho 4
@@ -63,11 +56,11 @@ Sobre a criação e inserção em tabelas:
 
 	Criada a tabela, pode-se inserir os dados.
 	Quanto da inserção, é necessário criar uma estrutura do tipo 'column' que criará uma lista encadeada de valores a serem adicionados a tabela.
-	Para adicionar uma tupla na tabela, é preciso inserir valor por valor de cada campo chamando a função insereValor(c, nomeCampo, valorCampo) onde dentro da função ela grava na column c o novo registo, retornando somente se foi adicionado com sucesso ou o erro correspondente:
+	Para adicionar uma tupla na tabela, é preciso inserir valor por valor de cada campo chamando a função insereValor(c, nomeCampo, valorCampo):
 
 		column *c = NULL;
-		insere(&c, "Nome", "Joana", tpCampo);
-		insere(&c, "Idade", "40", tpCampo);
+		c = insereValor(c, "Nome", "Joana");
+		c = insereValor(c, "Idade", "40");
 
 	OBS: A inserção dos dados deve ocorrer na sequência de criação de campo, sendo que não é possível realizar a inserção incompleta de uma tupla
 
