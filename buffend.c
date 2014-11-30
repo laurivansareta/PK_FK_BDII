@@ -3,7 +3,7 @@
 struct fs_objects leObjeto(char *nTabela){
 
 	FILE *dicionario;
-	char *tupla = (char *)malloc(sizeof(char)*TAMANHO_NOME_TABELA);
+	char *tupla = (char *)malloc(sizeof(char) * TAMANHO_NOME_TABELA );
 	int cod;
 	dicionario = fopen("fs_object.dat", "a+b"); // Abre o dicionario de dados.
 
@@ -23,7 +23,7 @@ struct fs_objects leObjeto(char *nTabela){
 	while(fgetc (dicionario) != EOF){
         fseek(dicionario, -1, 1);
 
-        fread(tupla, sizeof(char), TAMANHO_NOME_TABELA , dicionario); //Lê somente o nome da tabela
+        fread(tupla, sizeof(char), TAMANHO_NOME_TABELA, dicionario); //Lê somente o nome da tabela
 
         if(strcmp(tupla, nTabela) == 0){ // Verifica se o nome dado pelo usuario existe no dicionario de dados.
       		strcpy(objeto.nome, tupla);
@@ -63,7 +63,15 @@ tp_table *leSchema (struct fs_objects objeto){
         		fread(tupla, sizeof(char), TAMANHO_NOME_CAMPO, schema);
         		strcpy(esquema[i].nome,tupla);					// Copia dados do campo para o esquema.
         		fread(&esquema[i].tipo, sizeof(char),1,schema);      
-        		fread(&esquema[i].tam, sizeof(int),1,schema);   
+        		fread(&esquema[i].tam, sizeof(int),1,schema);
+				fread(&esquema[i].tp_Chave.tpChave, sizeof(int),1,schema);
+
+				if (esquema[i].tp_Chave.tpChave == 2 )
+				{
+					fread(&esquema[i].tp_Chave.tpChave, sizeof(int),1,schema);
+					fread(&esquema[i].tp_Chave.nomeTabelaF, (sizeof(char)*TAMANHO_NOME_TABELA ),1,schema);
+					fread(&esquema[i].tp_Chave.nomeCampoF, (sizeof(char)*TAMANHO_NOME_CAMPO ),1,schema);
+				}
         		i++;    		
         	}
         	else
@@ -382,7 +390,7 @@ table *iniciaTabela(char *nome)
 	t->esquema = NULL; // Inicia o esquema da tabela com NULL.
 	return t; // Retorna estrutura para criação de uma tabela.
 }
-table *adicionaCampo(table *t,char *nomeCampo, char tipoCampo, int tamanhoCampo)
+table *adicionaCampo(table *t,char *nomeCampo, char tipoCampo, int tamanhoCampo, tipoChave *tpChave)
 {
 	if(t == NULL) // Se a estrutura passada for nula, retorna erro.
 		return ERRO_ESTRUTURA_TABELA_NULA;
@@ -394,6 +402,7 @@ table *adicionaCampo(table *t,char *nomeCampo, char tipoCampo, int tamanhoCampo)
 		strcpy(e->nome, nomeCampo); // Copia nome do campo passado para o esquema
 		e->tipo = tipoCampo; // Copia tipo do campo passado para o esquema
 		e->tam = tamanhoCampo; // Copia tamanho do campo passado para o esquema
+		e->tp_Chave = *tpChave; //Copia a struct do tipo da chave para o esquema
 		t->esquema = e; 
 		return t; // Retorna a estrutura
 	}
@@ -408,6 +417,7 @@ table *adicionaCampo(table *t,char *nomeCampo, char tipoCampo, int tamanhoCampo)
 				strcpy(e->nome, nomeCampo);
 				e->tipo = tipoCampo;
 				e->tam = tamanhoCampo;
+				e->tp_Chave = *tpChave;
 				aux->next = e; // Faz o campo anterior apontar para o campo inserido.
 				return t;
 			}
@@ -435,6 +445,17 @@ int finalizaTabela(table *t)
 		fwrite(&aux->nome,sizeof(aux->nome),1,esquema);
 		fwrite(&aux->tipo,sizeof(aux->tipo),1,esquema);
 		fwrite(&aux->tam,sizeof(aux->tam),1,esquema);
+		if (aux->tp_Chave.tpChave == 0 || aux->tp_Chave.tpChave == 1)
+		{
+			fwrite(&aux->tp_Chave,sizeof(aux->tp_Chave.tpChave),1,esquema);
+
+		}else if (aux->tp_Chave.tpChave == 2 )
+		{
+			fwrite(&aux->tp_Chave,sizeof(aux->tp_Chave.tpChave),1,esquema);
+			fwrite(&aux->tp_Chave,sizeof(aux->tp_Chave.nomeTabelaF),1,esquema);
+			fwrite(&aux->tp_Chave,sizeof(aux->tp_Chave.nomeCampoF),1,esquema);
+		}
+		
 
 		qtdCampos++; // Soma quantidade total de campos inseridos.
 	}
@@ -453,12 +474,13 @@ int finalizaTabela(table *t)
 	fwrite(&nomeArquivo,sizeof(nomeArquivo),1,dicionario);
 	fwrite(&qtdCampos,sizeof(qtdCampos),1,dicionario);
 
+
 	fclose(dicionario);
 	return SUCCESS;
 }
 //-----------------------------------------
 // INSERE NA TABELA
-column *insereValor(column *c, char *nomeCampo, char *valorCampo)
+column *insereValor(column *c, char *nomeCampo, char *valorCampo, tipoChave *tpChave)
 {
 	
 	column *aux;
@@ -637,3 +659,54 @@ column * getPage(tp_buffer *buffer, tp_table *campos, struct fs_objects objeto, 
 	return colunas; //Retorna a 'page' do buffer
 }
 //----------------------------------------
+/*
+int verificaTabAtr(char *nomeTabela, char *nomeCampo){
+	int j;
+	//verifica inicialmente se existe alguma tabela com este nome
+	if (verificaNomeTabela(nomeTabela) == 1)
+	{
+		struct fs_objects objeto = leObjeto(nomeTabela[1]);	
+		
+		tp_table *esquema = leSchema(objeto);
+
+		if(esquema == ERRO_ABRIR_ESQUEMA){
+			return ERRO_ABRIR_ESQUEMA;
+		}
+
+		tp_buffer *bufferpoll = initbuffer();
+
+		if(bufferpoll == ERRO_DE_ALOCACAO){
+			return 0;
+		}
+
+		erro = colocaTuplaBuffer(bufferpoll, 0, esquema, objeto);
+
+		if(erro != SUCCESS){
+			return ERRO_COLOCA_TUPLA_BUFFER;
+		}
+
+		column *pagina = getPage(bufferpoll, esquema, objeto, 0);
+
+		if(pagina == ERRO_PARAMETRO){
+			return ERRO_PARAMETRO;
+		}
+
+		for(j=0; j < objeto.qtdCampos; j++){
+			
+			if(pagina[j].nomeCampo[TAMANHO_NOME_CAMPO] == nomeCampo){
+				return SUCCESS;
+			}else{
+				return ERRO_VALOR_NAO_EXISTENTE;
+			}
+		}
+
+		
+	}else
+	{
+		return ERRO_TABRLA_ATR_NAO_EXISTENTE;
+	}
+
+	
+
+}
+*/

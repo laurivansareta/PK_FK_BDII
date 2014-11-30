@@ -16,10 +16,17 @@ struct fs_objects { // Estrutura usada para carregar fs_objects.dat
 	int qtdCampos;						// Quantidade de campos da tabela.
 };
 
+typedef struct tipoChave { // Estrutura usada para carregar fs_objects.dat
+	int tpChave;	// Tipo da chave(0-nenhuma/1-primaria/2-estrangeira)
+	char nomeTabelaF[TAMANHO_NOME_TABELA];		//  Nome da tabela estrangeira
+	char nomeCampoF[TAMANHO_NOME_CAMPO];// Nome do campo na tabela estrangeira
+}tipoChave;
+
 typedef struct tp_table{ // Estrutura usada para carregar fs_schema.dat
 	char nome[TAMANHO_NOME_CAMPO];	// Nome do Campo.
 	char tipo;						// Tipo do Campo.
 	int tam;						// Tamanho do Campo.
+	struct tipoChave tp_Chave;
 	struct tp_table *next;			// Encadeamento para o próximo campo.
 }tp_table;
 
@@ -42,6 +49,7 @@ typedef struct tp_buffer{ // Estrutura utilizada para armazenar o buffer.
    char data[SIZE]; 		// Dados
    unsigned int position; 	// Próxima posição válida na página.
 }tp_buffer;
+
 
 // Union's utilizados na conversão de variáveis do tipo inteiro e double.
 
@@ -131,7 +139,7 @@ table *iniciaTabela(char *nomeTabela);
 	tipoCampo - Tipo do campo que irá ser inserido na lista de campos.
 	tamanhoCampo - Tamanho do campo que irá ser inserido na lista de campos.
 */
-table *adicionaCampo(table *t,char *nomeCampo, char tipoCampo, int tamanhoCampo);
+table *adicionaCampo(table *t,char *nomeCampo, char tipoCampo, int tamanhoCampo, tipoChave *tpChave);
 /*
 	Esta função finaliza a tabela preveamente estrutura pelas funcoes iniciaTabela() e adicionaCampo(). 
 	Escreve nos arquivos fs_object.dat e fs_schema.dat, a estrutura passada.
@@ -151,7 +159,7 @@ int finalizaTabela(table *t);
 	*nomeCampo - Nome do campo que o usuário vai inserir um valor.
 	*valorCampo - Valor do campo que vai ser inserido.
 */
-column *insereValor(column *c, char *nomeCampo, char *valorCampo);
+column *insereValor(column *c, char *nomeCampo, char *valorCampo, tipoChave *tpChave);
 /*
 	Esta função finaliza a inserção de valores em uma tabela. Assume que o usuário entrou com todos os campos de uma tupla completa.
 	Retorna: 
@@ -185,3 +193,16 @@ column * getPage(tp_buffer *buffer, tp_table *campos, struct fs_objects objeto, 
 	*nTupla - Número da tupla a ser excluida, este número é relativo a página do buffer e não a todos os registros carregados
 */
 column * excluirTuplaBuffer(tp_buffer *buffer, tp_table *campos, struct fs_objects objeto, int page, int nTupla);
+/*
+
+*/
+//int verificaTabAtr(char *nomeTabela, char *nomeCampo);
+/*
+	Esta função faz a verificação se o nome da tabela existe, se ela existir, verifica se o nome do atributo também existe,
+	caso ambos existam retorna SUCESS, caso contrário o código do erro;
+*/
+//int verificaValor(char *nomeTabela, char *nomeCampo, char *valor);
+/*
+	Esta função faz a verificação se o nome da tabela existe, se ela existir, verifica se o nome do atributo também existe
+	caso ambos existam a mesma vai varer todos os dados dele, se tiver um igual retorna true, caso contrário false;
+*/
