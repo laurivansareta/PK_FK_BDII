@@ -9,12 +9,6 @@
 #define TAMANHO_NOME_TABELA 20 	// Tamanho do nome da tabela.
 #define TAMANHO_NOME_ARQUIVO 20 // Tamanho do nome do arquivo.
 
-struct tipoChave { // Estrutura usada para carregar fs_objects.dat
-	int tpChave;	// Tipo da chave(0-nenhuma/1-primaria/2-estrangeira)
-	char nomeTabelaF[TAMANHO_NOME_TABELA];		//  Nome da tabela estrangeira
-	char nomeCampoF[TAMANHO_NOME_CAMPO];// Nome do campo na tabela estrangeira
-}tipoChave;
-
 struct fs_objects { // Estrutura usada para carregar fs_objects.dat
 	char nome[TAMANHO_NOME_TABELA];		//  Nome da tabela.
 	int cod;							// Código da tabela.
@@ -40,7 +34,7 @@ typedef struct column{ // Estrutura utilizada para inserir em uma tabela, exclui
 	char tipoCampo;						// Tipo do Campo.
 	char nomeCampo[TAMANHO_NOME_CAMPO];	//Nome do Campo.
 	char *valorCampo;					// Valor do Campo.
-	struct tipoChave tp_Chave;			//para inserir o tipo de chave que é
+	struct tipoChave *tp_Chave;			//para inserir o tipo de chave que é
 	struct column *next;				// Encadeamento para o próximo campo.
 }column;
 

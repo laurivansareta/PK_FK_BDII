@@ -1,4 +1,5 @@
 #include "buffend.h"
+#include <string.h>
 // LEITURA DE DICIONARIO E ESQUEMA
 struct fs_objects leObjeto(char *nTabela){
 
@@ -390,7 +391,7 @@ table *iniciaTabela(char *nome)
 	t->esquema = NULL; // Inicia o esquema da tabela com NULL.
 	return t; // Retorna estrutura para criação de uma tabela.
 }
-table *adicionaCampo(table *t,char *nomeCampo, char tipoCampo, int tamanhoCampo)
+table *adicionaCampo(table *t,char *nomeCampo, char tipoCampo, int tamanhoCampo, tipoChave *tpChave)
 {
 	if(t == NULL) // Se a estrutura passada for nula, retorna erro.
 		return ERRO_ESTRUTURA_TABELA_NULA;
@@ -546,7 +547,7 @@ int finalizaInsert(char *nome, column *c)
 			fwrite(&valorCampo,sizeof(valorCampo),1,dados);
 			
 			//para gravar em arquivo o tipo da chave e se for FK os dados da tabela
-			int tpChave = auxT->tp_Chave->tpChave;
+			int tpChave = auxT->tp_Chave.tpChave;
 			if (tpChave == 0)
 			{	//grava somente o tipo normal no caso 0
 				fwrite(&tpChave,sizeof(tpChave),1,dados);
@@ -555,8 +556,10 @@ int finalizaInsert(char *nome, column *c)
 				fwrite(&tpChave,sizeof(tpChave),1,dados);
 			}else if (tpChave == 2)
 			{	//grava somente o tipo chave estrangeira no caso 2
-				char nomeTabelaF[TAMANHO_NOME_TABELA] = auxT->tp_Chave->tpChave;[TAMANHO_NOME_CAMPO]
-				char nomeTabelaF[[TAMANHO_NOME_CAMPO]] = auxT->tp_Chave->tpChave;
+				char nomeTabelaF[TAMANHO_NOME_TABELA];
+				char nomeCampoF[TAMANHO_NOME_CAMPO];
+				strcpy(nomeTabelaF,auxT->tp_Chave.nomeTabelaF);
+				strcpy(nomeCampoF,auxT->tp_Chave.nomeCampoF);
 				fwrite(&tpChave,sizeof(tpChave),1,dados);
 				fwrite(&nomeTabelaF,sizeof(nomeTabelaF),1,dados);
 				fwrite(&nomeCampoF,sizeof(nomeCampoF),1,dados);
@@ -577,7 +580,7 @@ int finalizaInsert(char *nome, column *c)
 			fwrite(&valorInteiro,sizeof(valorInteiro),1,dados);
 
 			//para gravar em arquivo o tipo da chave e se for FK os dados da tabela
-			int tpChave = auxT->tp_Chave->tpChave;
+			int tpChave = auxT->tp_Chave.tpChave;
 			if (tpChave == 0)
 			{	//grava somente o tipo normal no caso 0
 				fwrite(&tpChave,sizeof(tpChave),1,dados);
@@ -586,8 +589,10 @@ int finalizaInsert(char *nome, column *c)
 				fwrite(&tpChave,sizeof(tpChave),1,dados);
 			}else if (tpChave == 2)
 			{	//grava somente o tipo chave estrangeira no caso 2
-				char nomeTabelaF[TAMANHO_NOME_TABELA] = auxT->tp_Chave->tpChave;[TAMANHO_NOME_CAMPO]
-				char nomeTabelaF[[TAMANHO_NOME_CAMPO]] = auxT->tp_Chave->tpChave;
+				char nomeTabelaF[TAMANHO_NOME_TABELA];
+				char nomeCampoF[TAMANHO_NOME_CAMPO];
+				strcpy(nomeTabelaF,auxT->tp_Chave.nomeTabelaF);
+				strcpy(nomeCampoF,auxT->tp_Chave.nomeCampoF);
 				fwrite(&tpChave,sizeof(tpChave),1,dados);
 				fwrite(&nomeTabelaF,sizeof(nomeTabelaF),1,dados);
 				fwrite(&nomeCampoF,sizeof(nomeCampoF),1,dados);
@@ -608,7 +613,7 @@ int finalizaInsert(char *nome, column *c)
 			fwrite(&valorDouble,sizeof(valorDouble),1,dados);
 
 			//para gravar em arquivo o tipo da chave e se for FK os dados da tabela
-			int tpChave = auxT->tp_Chave->tpChave;
+			int tpChave = auxT->tp_Chave.tpChave;
 			if (tpChave == 0)
 			{	//grava somente o tipo normal no caso 0
 				fwrite(&tpChave,sizeof(tpChave),1,dados);
@@ -617,8 +622,10 @@ int finalizaInsert(char *nome, column *c)
 				fwrite(&tpChave,sizeof(tpChave),1,dados);
 			}else if (tpChave == 2)
 			{	//grava somente o tipo chave estrangeira no caso 2
-				char nomeTabelaF[TAMANHO_NOME_TABELA] = auxT->tp_Chave->tpChave;[TAMANHO_NOME_CAMPO]
-				char nomeTabelaF[[TAMANHO_NOME_CAMPO]] = auxT->tp_Chave->tpChave;
+				char nomeTabelaF[TAMANHO_NOME_TABELA];
+				char nomeCampoF[TAMANHO_NOME_CAMPO];
+				strcpy(nomeTabelaF,auxT->tp_Chave.nomeTabelaF);
+				strcpy(nomeCampoF,auxT->tp_Chave.nomeCampoF);
 				fwrite(&tpChave,sizeof(tpChave),1,dados);
 				fwrite(&nomeTabelaF,sizeof(nomeTabelaF),1,dados);
 				fwrite(&nomeCampoF,sizeof(nomeCampoF),1,dados);
@@ -635,7 +642,7 @@ int finalizaInsert(char *nome, column *c)
 			fwrite(&valorChar,sizeof(valorChar),1,dados);
 
 			//para gravar em arquivo o tipo da chave e se for FK os dados da tabela
-			int tpChave = auxT->tp_Chave->tpChave;
+			int tpChave = auxT->tp_Chave.tpChave;
 			if (tpChave == 0)
 			{	//grava somente o tipo normal no caso 0
 				fwrite(&tpChave,sizeof(tpChave),1,dados);
@@ -644,8 +651,10 @@ int finalizaInsert(char *nome, column *c)
 				fwrite(&tpChave,sizeof(tpChave),1,dados);
 			}else if (tpChave == 2)
 			{	//grava somente o tipo chave estrangeira no caso 2
-				char nomeTabelaF[TAMANHO_NOME_TABELA] = auxT->tp_Chave->tpChave;[TAMANHO_NOME_CAMPO]
-				char nomeTabelaF[[TAMANHO_NOME_CAMPO]] = auxT->tp_Chave->tpChave;
+				char nomeTabelaF[TAMANHO_NOME_TABELA];
+				char nomeCampoF[TAMANHO_NOME_CAMPO];
+				strcpy(nomeTabelaF,auxT->tp_Chave.nomeTabelaF);
+				strcpy(nomeCampoF,auxT->tp_Chave.nomeCampoF);
 				fwrite(&tpChave,sizeof(tpChave),1,dados);
 				fwrite(&nomeTabelaF,sizeof(nomeTabelaF),1,dados);
 				fwrite(&nomeCampoF,sizeof(nomeCampoF),1,dados);
@@ -740,18 +749,18 @@ int verificaTabAtr(char *nomeTabela, char *nomeCampo){
 	//verifica inicialmente se existe alguma tabela com este nome
 	if (verificaNomeTabela(nomeTabela) == 1)
 	{
-		struct fs_objects objeto = leObjeto(nomeTabela[1]);	
+		struct fs_objects objeto = leObjeto(nomeTabela);	
 		tp_table *esquema = leSchema(objeto);
 
 		if(esquema == ERRO_ABRIR_ESQUEMA){
-			return ERRO_ABRIR_ESQUEMA;
+			//return ERRO_ABRIR_ESQUEMA;
 		}
 
 		tp_buffer *bufferpoll = initbuffer();
 		if(bufferpoll == ERRO_DE_ALOCACAO){
-			return ERRO_DE_ALOCACAO;
+			//return ERRO_DE_ALOCACAO;
 		}
-
+ 
 		retorno = colocaTuplaBuffer(bufferpoll, 0, esquema, objeto);
 		if(retorno != SUCCESS){
 			return ERRO_COLOCA_TUPLA_BUFFER;
@@ -759,21 +768,18 @@ int verificaTabAtr(char *nomeTabela, char *nomeCampo){
 
 		column *pagina = getPage(bufferpoll, esquema, objeto, 0);
 		if(pagina == ERRO_PARAMETRO){
-			return ERRO_PARAMETRO;
+			//return ERRO_PARAMETRO;
 		}
 		//percore a lista de campos para ver se o nome do atributo é existente, se ele existir retornará SUCESS
 		for(aux=0; aux < objeto.qtdCampos; aux++){
-			
-			if(pagina[aux].nomeCampo[TAMANHO_NOME_CAMPO] == nomeCampo){
+			if(strcmp(pagina[aux].nomeCampo,nomeCampo)){
 				return SUCCESS;
 			}else{
 				return ERRO_VALOR_NAO_EXISTENTE;
 			}
 		}	
-	}else
-	{
-		return ERRO_TABELA_INEXISTENTE;
 	}
+		return ERRO_TABELA_INEXISTENTE;
 
 	
 
@@ -785,52 +791,55 @@ int insere(column *c, char *nomeCampo, char *valorCampo, tipoChave *tpChave){
 
 	if(tpChave->tpChave == 1){ // inserção de chave primaria
 		//guarda o retorno da função, caso ja exista um valor igual na tabela da insersão possa ser feito o tratamento do erro
-		retorno = verificaTabAtr( nomeCampo, atributo);
+		retorno = verificaTabAtr( nomeCampo, valorCampo);
 		if(retorno == 0){
-			retorno = insereValor(c, nomeCampo, valorCampo, tpChave);
+			column *retornoColuna = insereValor(c, nomeCampo, valorCampo, tpChave);
 			//confere o retorno da função insere valor
-			if (retorno != NULL)
+			if (retornoColuna != NULL)
 			{
 				return SUCCESS;
 			}else{
-				return ERRO_INSERIR_VALOR;
+				//return ERRO_INSERIR_VALOR;
 			}
 		}
 		else{
 			return retorno;
 		}
 	}
-	else if(tpChave->tpChave == 2){ //inserção de chave estrangeira
-		retorno = verificaValor(tpChave->nomeTabelaF, tpChave->nomeCampoF, valorCampo )
+	else if (tpChave->tpChave == 2){ //inserção de chave estrangeira
+		retorno = 1;//verificaValor(tpChave->nomeTabelaF, tpChave->nomeCampoF, valorCampo );
 		if(retorno == 0){
-			retorno = insereValor(c, nomeCampo, valorCampo, tpChave);
+			column *retornoColuna = insereValor(c, nomeCampo, valorCampo, tpChave);
 			//confere o retorno da função insere valor
-			if (retorno != NULL)
+			if (retornoColuna!= NULL)
 			{
 				return SUCCESS;
 			}else{
-				return ERRO_INSERIR_VALOR;
+				//return ERRO_INSERIR_VALOR;
 			}
 		}
 		else{
-			return retorno;
+			//return retorno;
 		}
 		
 	}
 	else { //inserção pra atributo que não é nem PK nem FK
 
-		retorno = insereValor(c, nomeCampo, valorCampo, tpChave);
+		column *retornoColuna = insereValor(c, nomeCampo, valorCampo, tpChave);
 		//confere o retorno da função insere valor
-		if (retorno != NULL)
+		if (retornoColuna != NULL)
 		{
 			return SUCCESS;
 		}else{
-			return retorno;
+			//return retorno;
 		}			
 	}
+	//------------------------------------------------------------------------------
+	return retorno;// ------------VERIFICAR PQ DESSE ERRO --------------------------
+	//------------------------------------------------------------------------------
 }
 
-int verificaValor(char *nomeTabela, char *nomeCampo, char *valor){
-	
-}
+//int verificaValor(char *nomeTabela, char *nomeCampo, char *valor){
+//	
+//}
 
