@@ -659,6 +659,7 @@ column * getPage(tp_buffer *buffer, tp_table *campos, struct fs_objects objeto, 
 	return colunas; //Retorna a 'page' do buffer
 }
 //----------------------------------------
+<<<<<<< HEAD
 /*
 int verificaTabAtr(char *nomeTabela, char *nomeCampo){
 	int j;
@@ -710,3 +711,37 @@ int verificaTabAtr(char *nomeTabela, char *nomeCampo){
 
 }
 */
+=======
+int insere(column *c, char *nomeCampo, char *valorCampo, tipoChave chave){
+		if(chave->tpChave == 1){ // inserção de chave primaria
+			temp = 0;//verificaTabAtr( nome, atributo);
+			if(temp == 0){
+				insereValor(c, nomeCampo, valorCampo);		
+				return SUCCESS;
+			}
+			else{
+				return ERRO_NOME_TABELA;
+			}
+		}
+		else if(chave->tpChave == 2){ //inserção de chave estrangeira
+			
+			
+		}
+		else { //inserção normal
+			insereValor(c, nomeCampo, valorCampo);			
+		}
+}
+
+int verificaTabAtr(char *nomeTabela, char *nomeCampo){
+	if(verificaNomeTabela(nomeTabela)){
+		return SUCCESS;
+	}	
+	else{
+		return ERRO_NOME_TABELA;
+	}
+
+int verificaValor(char *nomeTabela, char *nomeCampo, char *valor){
+	
+}
+
+>>>>>>> 8653a73eb9af00f4575c0f10fcfcb8f23dbf909f
