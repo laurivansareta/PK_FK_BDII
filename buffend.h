@@ -40,6 +40,7 @@ typedef struct column{ // Estrutura utilizada para inserir em uma tabela, exclui
 	char tipoCampo;						// Tipo do Campo.
 	char nomeCampo[TAMANHO_NOME_CAMPO];	//Nome do Campo.
 	char *valorCampo;					// Valor do Campo.
+	struct tipoChave tp_Chave;			//para inserir o tipo de chave que é
 	struct column *next;				// Encadeamento para o próximo campo.
 }column;
 
@@ -165,13 +166,14 @@ int finalizaTabela(table *t);
 	*nomeCampo - Nome do campo que o usuário vai inserir um valor.
 	*valorCampo - Valor do campo que vai ser inserido.
 */
-<<<<<<< HEAD
-column *insereValor(column *c, char *nomeCampo, char *valorCampo, tipoChave *tpChave);
-=======
-int insere(column *c, char *nomeCampo, char *valorCampo, tipoChave chave);
 
-column *insereValor(column *c, char *nomeCampo, char *valorCampo);
->>>>>>> 8653a73eb9af00f4575c0f10fcfcb8f23dbf909f
+int insere(column *c, char *nomeCampo, char *valorCampo, tipoChave *tpChave);
+/*
+
+*/
+
+column *insereValor(column *c, char *nomeCampo, char *valorCampo, tipoChave *tpChave);
+
 /*
 	Esta função finaliza a inserção de valores em uma tabela. Assume que o usuário entrou com todos os campos de uma tupla completa.
 	Retorna: 
@@ -205,23 +207,16 @@ column * getPage(tp_buffer *buffer, tp_table *campos, struct fs_objects objeto, 
 	*nTupla - Número da tupla a ser excluida, este número é relativo a página do buffer e não a todos os registros carregados
 */
 column * excluirTuplaBuffer(tp_buffer *buffer, tp_table *campos, struct fs_objects objeto, int page, int nTupla);
-<<<<<<< HEAD
-/*
 
-*/
-//int verificaTabAtr(char *nomeTabela, char *nomeCampo);
+
+int verificaTabAtr(char *nomeTabela, char *nomeCampo);
 /*
 	Esta função faz a verificação se o nome da tabela existe, se ela existir, verifica se o nome do atributo também existe,
 	caso ambos existam retorna SUCESS, caso contrário o código do erro;
 */
-//int verificaValor(char *nomeTabela, char *nomeCampo, char *valor);
+int verificaValor(char *nomeTabela, char *nomeCampo, char *valor);
 /*
 	Esta função faz a verificação se o nome da tabela existe, se ela existir, verifica se o nome do atributo também existe
 	caso ambos existam a mesma vai varer todos os dados dele, se tiver um igual retorna true, caso contrário false;
 */
-=======
 
-int verificaTabAtr(char *nomeTabela, char *nomeCampo);
-
-int verificaValor(char *nomeTabela, char *nomeCampo, char *valor);
->>>>>>> 8653a73eb9af00f4575c0f10fcfcb8f23dbf909f
