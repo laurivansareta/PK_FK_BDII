@@ -1,50 +1,37 @@
-#include "buffend.h"
+#include "buffend.h" 
 
 int main(int rg, char *nomeTabela[]){
-
+	
 	int erro;
 
 	table *t = NULL;
 	column *c = NULL;
-	tipoChave tc;
-	
-	printf("\nantes inicia tabela\n");
+
 	t = iniciaTabela("Pessoa");
-	printf("\ndepois inicia tabela\n\n");
 
 	if(t == ERRO_NOME_TABELA_INVALIDO){
 		printf("Erro: na função iniciaTabela(). Nome da tabela já existente.\n");
 		return 0;
 	}
 
-	tc.tpChave = 1;
-	printf("antes adiciona campo");
-	t = adicionaCampo(t, "Nome", 'S', 20, tc); 
-	printf("\ndepois adiciona campo\n");
-	/*
-	tc.tpChave = 0;
-	t = adicionaCampo(t, "Idade", 'I', (sizeof(int)), tc);
-	t = adicionaCampo(t, "Sexo", 'C', (sizeof(char)), tc);
-	t = adicionaCampo(t, "Obs", 'S', 40, tc);
-	t = adicionaCampo(t, "Media", 'D', (sizeof(double)), tc);
-	printf("\antes finaliza tabela\n\n");
+	t = adicionaCampo(t, "Nome", 'S', 20);
+	t = adicionaCampo(t, "Idade", 'I', (sizeof(int)));
+	t = adicionaCampo(t, "Sexo", 'C', (sizeof(char)));
+	t = adicionaCampo(t, "Obs", 'S', 40);
+	t = adicionaCampo(t, "Media", 'D', (sizeof(double)));
+
 	erro = finalizaTabela(t);
-	printf("\ndepois Finaliza tabela\n\n");
+
 	if(erro != SUCCESS){
 		printf("Erro %d: na função finalizaTabela().\n", erro);
 		return 0;
 	}
 	
-	tc.tpChave = 1;
-	c = insereValor(c, "Nome", "Um", &tc);
-	tc.tpChave = 0;
-	c = insereValor(c, "Idade", "40", &tc);
-	tc.tpChave = 0;
-	c = insereValor(c, "Sexo", "F", &tc);
-	tc.tpChave = 0;
-	c = insereValor(c, "Obs", "Obs. Um", &tc);
-	tc.tpChave = 0;
-	c = insereValor(c, "Media", "2.5", &tc);
+	c = insereValor(c, "Nome", "Um");
+	c = insereValor(c, "Idade", "40");
+	c = insereValor(c, "Sexo", "F");
+	c = insereValor(c, "Obs", "Obs. Um");
+	c = insereValor(c, "Media", "2.5");
 	
 
 	c = insereValor(c, "Nome", "Dois");
@@ -58,10 +45,9 @@ int main(int rg, char *nomeTabela[]){
 	c = insereValor(c, "Sexo", "F");
 	c = insereValor(c, "Obs", "Obs. Três");
 	c = insereValor(c, "Media", "1.456");
-		*/  /*
-	printf("Antes finaliza insert");
+
 	erro = finalizaInsert("Pessoa", c);
-	printf("depois finaliza insert");
+
 	if(erro != SUCCESS){
 		printf("Erro %d: na função finalizaInsert()\n", erro);
 		return 0;
@@ -71,8 +57,8 @@ int main(int rg, char *nomeTabela[]){
 	if(rg == 1){
 		printf("Erro: nome de tabela nao inserido na linha de comando.\n");
 		return 0;
-	} 
-	*//*
+	}
+
 	struct fs_objects objeto = leObjeto(nomeTabela[1]);	
 	
 	tp_table *esquema = leSchema(objeto);
@@ -168,7 +154,7 @@ int main(int rg, char *nomeTabela[]){
 	}
 	printf("\n\n");
 	
-	//-------------------------------------------------------------
+	//--------------------------------------------------------------
 	
 
 	erro = printbufferpoll(bufferpoll, esquema, objeto, 0);
@@ -177,6 +163,6 @@ int main(int rg, char *nomeTabela[]){
 		printf("Erro %d: na função printbufferpoll().\n", erro);
 		return 0;
 	}
-	*/
+
 	return 0;
 }
