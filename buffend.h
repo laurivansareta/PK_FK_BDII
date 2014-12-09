@@ -16,10 +16,17 @@ struct fs_objects { // Estrutura usada para carregar fs_objects.dat
 	int qtdCampos;						// Quantidade de campos da tabela.
 };
 
+typedef struct tipoChave { // Estrutura usada para carregar fs_objects.dat
+	int tpChave;	// Tipo da chave(0-nenhuma/1-primaria/2-estrangeira)
+	char nomeTabelaF[TAMANHO_NOME_TABELA];		//  Nome da tabela estrangeira
+	char nomeCampoF[TAMANHO_NOME_CAMPO];// Nome do campo na tabela estrangeira
+}tipoChave;
+
 typedef struct tp_table{ // Estrutura usada para carregar fs_schema.dat
 	char nome[TAMANHO_NOME_CAMPO];	// Nome do Campo.
 	char tipo;						// Tipo do Campo.
 	int tam;						// Tamanho do Campo.
+	struct tipoChave tp_Chave;		//para dizer o tipo de chave que é aquele atributo
 	struct tp_table *next;			// Encadeamento para o próximo campo.
 }tp_table;
 
@@ -27,6 +34,7 @@ typedef struct column{ // Estrutura utilizada para inserir em uma tabela, exclui
 	char tipoCampo;						// Tipo do Campo.
 	char nomeCampo[TAMANHO_NOME_CAMPO];	//Nome do Campo.
 	char *valorCampo;					// Valor do Campo.
+	struct tipoChave tp_Chave;			//para dizer o tipo de chave que é aquele atributo
 	struct column *next;				// Encadeamento para o próximo campo.
 }column;
 
@@ -131,7 +139,7 @@ table *iniciaTabela(char *nomeTabela);
 	tipoCampo - Tipo do campo que irá ser inserido na lista de campos.
 	tamanhoCampo - Tamanho do campo que irá ser inserido na lista de campos.
 */
-table *adicionaCampo(table *t,char *nomeCampo, char tipoCampo, int tamanhoCampo);
+table *adicionaCampo(table *t,char *nomeCampo, char tipoCampo, int tamanhoCampo, tipoChave *tpChave);
 /*
 	Esta função finaliza a tabela preveamente estrutura pelas funcoes iniciaTabela() e adicionaCampo(). 
 	Escreve nos arquivos fs_object.dat e fs_schema.dat, a estrutura passada.
@@ -185,3 +193,11 @@ column * getPage(tp_buffer *buffer, tp_table *campos, struct fs_objects objeto, 
 	*nTupla - Número da tupla a ser excluida, este número é relativo a página do buffer e não a todos os registros carregados
 */
 column * excluirTuplaBuffer(tp_buffer *buffer, tp_table *campos, struct fs_objects objeto, int page, int nTupla);
+/*
+ */
+ int verificaTabAtr(char *nomeTabela, char *nomeCampo);
+ /*
+  Verifica através dos parametros informados se ja existe no discionário de dados uma tabela com este nome
+  e se existir carrega a mesma no buffer e verifica se existe o atributo e retorna SUCCESS se tiver, caso contrário
+  retornará o respectivo erro;
+  */

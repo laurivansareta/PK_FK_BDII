@@ -5,28 +5,51 @@ int main(int rg, char *nomeTabela[]){
 	int erro;
 
 	table *t = NULL;
-	column *c = NULL;
+	//column *c = NULL;
+	tipoChave atributo;
 
-	t = iniciaTabela("Pessoa");
-
+	t = iniciaTabela("Profissao");
 	if(t == ERRO_NOME_TABELA_INVALIDO){
 		printf("Erro: na função iniciaTabela(). Nome da tabela já existente.\n");
 		return 0;
 	}
-
-	t = adicionaCampo(t, "Nome", 'S', 20);
-	t = adicionaCampo(t, "Idade", 'I', (sizeof(int)));
-	t = adicionaCampo(t, "Sexo", 'C', (sizeof(char)));
-	t = adicionaCampo(t, "Obs", 'S', 40);
-	t = adicionaCampo(t, "Media", 'D', (sizeof(double)));
-
+		atributo.tpChave = 1;
+	t = adicionaCampo(t, "Nome", 'S', 20, &atributo);
+		atributo.tpChave = 0;
+	t = adicionaCampo(t, "descricao", 'I', (sizeof(int)), &atributo);
+	
 	erro = finalizaTabela(t);
-
+	
+	t = NULL;
 	if(erro != SUCCESS){
-		printf("Erro %d: na função finalizaTabela().\n", erro);
+		printf("Erro %d: na função finalizaTabela() - 1.\n", erro);
 		return 0;
 	}
 	
+	//inicia a tabela pessoa tendo como fk a profissao
+	t = iniciaTabela("Pessoa");
+		atributo.tpChave = 1;
+	t = adicionaCampo(t, "Nome", 'S', 20, &atributo);
+		atributo.tpChave = 0;
+	t = adicionaCampo(t, "Idade", 'I', (sizeof(int)), &atributo);
+	t = adicionaCampo(t, "Sexo", 'C', (sizeof(char)), &atributo);
+	t = adicionaCampo(t, "Obs", 'S', 40, &atributo);
+	t = adicionaCampo(t, "Media", 'D', (sizeof(double)), &atributo);
+
+		atributo.tpChave = 2;
+		strcpy(atributo.nomeTabelaF, "Profissao");
+		strcpy(atributo.nomeCampoF, "Nome");
+	t = adicionaCampo(t, "profissao", 'S', 40, &atributo);
+	
+	erro = finalizaTabela(t);
+	
+	if(erro != SUCCESS){
+		printf("Erro %d: na função finalizaTabela() - 2.\n", erro);
+		return 0;
+	}
+	
+	
+	/*
 	c = insereValor(c, "Nome", "Um");
 	c = insereValor(c, "Idade", "40");
 	c = insereValor(c, "Sexo", "F");
@@ -163,6 +186,6 @@ int main(int rg, char *nomeTabela[]){
 		printf("Erro %d: na função printbufferpoll().\n", erro);
 		return 0;
 	}
-
+	*/
 	return 0;
 }
