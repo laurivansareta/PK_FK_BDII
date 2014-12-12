@@ -201,3 +201,17 @@ column * excluirTuplaBuffer(tp_buffer *buffer, tp_table *campos, struct fs_objec
   e se existir carrega a mesma no buffer e verifica se existe o atributo e retorna SUCCESS se tiver, caso contrário
   retornará o respectivo erro;
   */
+  table *getTabela(char *nomeTabela);
+  /*
+   Através de uma string retorna uma struct do tipo tabela
+   RETORNOS:
+	struct do tipo table que conterá a tabela
+	NULL caso retorne null a tabela não existe ou ocorreu algum erro
+   */
+  int *excluiTabela(char *nomeTabela);
+  /*
+   passa o nome da tabela a ser excluida e retorna um int com a situação
+   RETORNOS:
+   SUCCESS em caso de sucesso
+   ERRO_... caso ocorra algum erro, sendo que retornará o correspondente
+   */ 

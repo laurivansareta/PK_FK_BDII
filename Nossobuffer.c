@@ -25,7 +25,7 @@ int main(int rg, char *nomeTabela[]){
 		printf("Erro %d: na função finalizaTabela() - 1.\n", erro);
 		return 0;
 	}
-	
+	/*
 	//inicia a tabela pessoa tendo como fk a profissao
 	t = iniciaTabela("Pessoa");
 		atributo.tpChave = 1;
@@ -49,7 +49,7 @@ int main(int rg, char *nomeTabela[]){
 	}
 	
 	
-	/*
+
 	c = insereValor(c, "Nome", "Um");
 	c = insereValor(c, "Idade", "40");
 	c = insereValor(c, "Sexo", "F");

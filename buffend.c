@@ -694,9 +694,57 @@ int verificaTabAtr(char *nomeTabela, char *nomeCampo){
 				return ERRO_ATRIB_NAO_EXISTENTE;
 			}
 		}	
-	}
+	}else{
 		return ERRO_TABELA_INEXISTENTE;
+	}
+}
 
-	
+//Através de uma string retorna uma struct do tipo tabela
+table *getTabela(char *nomeTabela){
+	//verifica inicialmente se existe alguma tabela com este nome
+	if (verificaNomeTabela(nomeTabela) == 1)
+	{	//carrega as informações do disco para a struct tabela e a retorna;
+		struct fs_objects objeto = leObjeto(nomeTabela);	
+		tp_table *esquema = leSchema(objeto);
+		table *tabela = NULL;
+		strcpy(tabela->nome, nomeTabela);
+		tabela->esquema = esquema;
 
+		if(esquema == ERRO_ABRIR_ESQUEMA){
+			return ERRO_ABRIR_ESQUEMA;
+		}else{
+			return tabela;
+		}
+	}else{
+		return ERRO_NOME_TABELA_INVALIDO;
+	}
+}
+//passa o nome da tabela a ser excluida e retorna um int com a situação
+int *excluiTabela(char *nomeTabela){
+	if(verificaNomeTabela(nomeTabela) == 1 )
+	{
+		FILE *dicionario;
+		//char *tupla = (char *)malloc(sizeof(char)*TAMANHO_NOME_TABELA);
+		//tenta carregar o arquivo, caso nao exista ja retorna sucesso pois estava tentando excluir
+		if((dicionario = fopen("fs_object.dat","a+b")) == NULL)
+		{
+			return SUCCESS;
+		}else{
+		/*	while(fgetc (dicionario) != EOF){
+				fseek(dicionario, -1, 1);
+
+				fread(tupla, sizeof(char), TAMANHO_NOME_TABELA, dicionario); //Lê somente o nome da tabela
+
+				if(strcmp(tupla, nomeTabela) == 0){ // Verifica se o nome dado pelo usuario existe no dicionario de dados.
+					
+					return 1;
+				}
+				
+				fseek(dicionario, 28, 1);
+			}
+
+			fclose(dicionario);
+			return 0;*/
+		} 
+	}
 }
