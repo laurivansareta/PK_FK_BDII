@@ -215,7 +215,7 @@ column * excluirTuplaBuffer(tp_buffer *buffer, tp_table *campos, struct fs_objec
    SUCCESS em caso de sucesso
    ERRO_... caso ocorra algum erro, sendo que retornará o correspondente
    */ 
-   int verificaFK(*tpChave);
+   int verificaFK(tipoChave *tpChave);
    /*
     Recebe uma struct do tipoChave, e fará a verificação se a tabela, atributo e valor realmente existem
     antes de fazer a inclusão.

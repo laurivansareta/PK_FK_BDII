@@ -490,7 +490,7 @@ column *insereValor(column *c, char *nomeCampo, char *valorCampo, tipoChave *tpC
 		e->valorCampo = (char *)malloc(sizeof(char) * (sizeof(valorCampo)));
 		strcpy(e->nomeCampo, nomeCampo);
 		strcpy(e->valorCampo, valorCampo);
-		e->tp_chave = *tpChave;//verificar o porque do erro
+		e->tp_Chave = *tpChave;//verificar o porque do erro
 		e->next = NULL;
 		c = e;
 		return c;
@@ -506,7 +506,7 @@ column *insereValor(column *c, char *nomeCampo, char *valorCampo, tipoChave *tpC
 				e->next = NULL;
 				strcpy(e->nomeCampo, nomeCampo);
 				strcpy(e->valorCampo, valorCampo);
-				e->tp_chave = *tpChave;//verificar o porque do erro
+				e->tp_Chave = *tpChave;//verificar o porque do erro
 				aux->next = e;
 				return c;
 			}
@@ -699,6 +699,7 @@ int verificaTabAtr(char *nomeTabela, char *nomeCampo){
 	}else{
 		return ERRO_TABELA_INEXISTENTE;
 	}
+	return 1;//colocado para tirar warning até terminar
 }
 
 //Através de uma string retorna uma struct do tipo tabela
@@ -741,11 +742,11 @@ int *excluiTabela(char *nomeTabela){
 			return SUCCESS;
 		}
 	}else{
-		return ERRO_NOME_TABELA;
+		//return ERRO_NOME_TABELA;
 	}
-	
+	return SUCCESS;
 }
 
-int verificaFK(*tpChave){
+int verificaFK(tipoChave *tpChave){
 return SUCCESS;	
 }
