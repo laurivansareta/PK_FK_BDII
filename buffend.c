@@ -434,23 +434,40 @@ int finalizaTabela(table *t)
         return ERRO_ABRIR_ARQUIVO;
 
 	for(aux = t->esquema; aux!=NULL; aux = aux->next) // Salva novos campos no esquema da tabela, fs_schema.dat
-	{
+	{	
+		printf("\n cod tabela: %d = %lu ",codTbl,sizeof(codTbl));
 		fwrite(&codTbl,sizeof(codTbl),1,esquema);
+		
+		printf("\n nome: %s = %lu ",aux->nome,sizeof(aux->nome));
 		fwrite(&aux->nome,sizeof(aux->nome),1,esquema);
+		
+		printf("\n tipo: %c = %lu ",aux->tipo,sizeof(aux->tipo));
 		fwrite(&aux->tipo,sizeof(aux->tipo),1,esquema);
+		
+		printf("\n tamanho: %d = %lu ",aux->tam,sizeof(aux->tam));
 		fwrite(&aux->tam,sizeof(aux->tam),1,esquema);
-		if (aux->tp_Chave.tpChave == 0 || aux->tp_Chave.tpChave == 1)
+		if (aux->tp_Chave.tpChave == 1 || aux->tp_Chave.tpChave == 2)
 		{
+			printf("\n teste fim tipo: %d = %lu \n", aux->tp_Chave.tpChave, (sizeof(aux->tp_Chave.tpChave)));
 			fwrite(&aux->tp_Chave.tpChave,sizeof(aux->tp_Chave.tpChave),1,esquema);
+			//fwrite("final",6,1,esquema);
 
-		}else if (aux->tp_Chave.tpChave == 2 )
+		}else if (aux->tp_Chave.tpChave == 3 )
 		{	//CONFERIR SE ESTA CERTA ESSA FUNCAO, QUALQUER COISA DEIXAR PRO FIM
 			//int temp = verificaTabAtr(aux->tp_Chave.nomeTabelaF, aux->tp_Chave.nomeCampoF);
 			int temp = SUCCESS;
 			if( temp == SUCCESS )
 			{	//CONFERIR PORQUE ESTA LEVANDO LIXO
+				printf("\n teste fim tipo: %d = %lu ",aux->tp_Chave.tpChave,sizeof(aux->tp_Chave.tpChave));
 				fwrite(&aux->tp_Chave.tpChave,sizeof(aux->tp_Chave.tpChave),1,esquema);
+				//concatena um \0 no fim da palavra para nao gerar erro no momento da gravação no arquivo
+				//strcat(aux->tp_Chave.nomeTabelaF, "\0");
+				
+				printf("\n nome tabela FK: %s = %lu ",aux->tp_Chave.nomeTabelaF,sizeof(aux->tp_Chave.nomeTabelaF));
 				fwrite(&aux->tp_Chave.nomeTabelaF,sizeof(aux->tp_Chave.nomeTabelaF),1,esquema);
+				//strcat(aux->tp_Chave.nomeCampoF, "\0");
+				
+				printf("\n nome campo FK: %s = %lu  \n",aux->tp_Chave.nomeCampoF,sizeof(aux->tp_Chave.nomeCampoF));
 				fwrite(&aux->tp_Chave.nomeCampoF,sizeof(aux->tp_Chave.nomeCampoF),1,esquema);
 			}else if(temp == FK_NAO_EXISTE ){
 				return FK_NAO_EXISTE;
@@ -458,6 +475,7 @@ int finalizaTabela(table *t)
 				return ERRO_TABELA_INEXISTENTE;
 			}
 		}
+		
 		qtdCampos++; // Soma quantidade total de campos inseridos.
 	}
 
@@ -490,7 +508,7 @@ column *insereValor(column *c, char *nomeCampo, char *valorCampo, tipoChave *tpC
 		e->valorCampo = (char *)malloc(sizeof(char) * (sizeof(valorCampo)));
 		strcpy(e->nomeCampo, nomeCampo);
 		strcpy(e->valorCampo, valorCampo);
-		e->tp_Chave = *tpChave;//verificar o porque do erro
+		e->tp_Chave = *tpChave;
 		e->next = NULL;
 		c = e;
 		return c;
@@ -506,7 +524,7 @@ column *insereValor(column *c, char *nomeCampo, char *valorCampo, tipoChave *tpC
 				e->next = NULL;
 				strcpy(e->nomeCampo, nomeCampo);
 				strcpy(e->valorCampo, valorCampo);
-				e->tp_Chave = *tpChave;//verificar o porque do erro
+				e->tp_Chave = *tpChave;
 				aux->next = e;
 				return c;
 			}

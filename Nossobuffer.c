@@ -3,7 +3,7 @@
 int main(int rg, char *nomeTabela[]){
 
 	int erro;
-	table *tDois = NULL;
+	//table *tDois = NULL;
 	table *t = NULL;
 	//column *c = NULL;
 	tipoChave atributo;
@@ -15,10 +15,12 @@ int main(int rg, char *nomeTabela[]){
 	}
 		atributo.tpChave = 1;
 	t = adicionaCampo(t, "Nome", 'S', 20, &atributo);
-		atributo.tpChave = 0;
+		atributo.tpChave = 2;
 	t = adicionaCampo(t, "descricao", 'S', 30, &atributo);
-	t = adicionaCampo(t, "competencia", 'I', 20, &atributo);
+	t = adicionaCampo(t, "competencia", 'I', (sizeof(int)), &atributo);
 	t = adicionaCampo(t, "experiencia", 'S', 25, &atributo);
+	t = adicionaCampo(t, "testeChar", 'C', (sizeof(char)), &atributo);
+	
 
 	erro = finalizaTabela(t);
 
@@ -27,21 +29,21 @@ int main(int rg, char *nomeTabela[]){
 		printf("Erro %d: na função finalizaTabela() - 1.\n", erro);
 		return 0;
 	}
-
+/*
 	//inicia a tabela pessoa tendo como fk a profissao
 	tDois = iniciaTabela("Pessoa");
 		atributo.tpChave = 1;
 	tDois = adicionaCampo(tDois, "Nome", 'S', 20, &atributo);
-		atributo.tpChave = 0;
-	tDois = adicionaCampo(tDois, "Idade", 'I', (sizeof(int)), &atributo);
-	tDois = adicionaCampo(tDois, "Sexo", 'C', (sizeof(char)), &atributo);
-	tDois = adicionaCampo(tDois, "Obs", 'S', 12, &atributo);
-	tDois = adicionaCampo(tDois, "Media", 'D', (sizeof(double)), &atributo); //aqui ta gravando lixo deve ser por causa do tipo
+		//atributo.tpChave = 2;
+	//tDois = adicionaCampo(tDois, "Idade", 'I', (sizeof(int)), &atributo);
+	//tDois = adicionaCampo(tDois, "Sexo", 'C', (sizeof(char)), &atributo);
+	//tDois = adicionaCampo(tDois, "Obs", 'S', 40, &atributo);
+	//tDois = adicionaCampo(tDois, "Media", 'D', 10, &atributo); //aqui ta gravando lixo deve ser por causa do tipo
 
-	//	atributo.tpChave = 2;
-	//	strcpy(atributo.nomeTabelaF, "Profissao");
-	//	strcpy(atributo.nomeCampoF, "Nome");
-	tDois = adicionaCampo(tDois, "profissao", 'S', 40, &atributo);
+		atributo.tpChave = 3;
+		strcpy(atributo.nomeTabelaF, "Profissao");
+		strcpy(atributo.nomeCampoF, "Nome");
+	tDois = adicionaCampo(tDois, "profissao", 'S', 20, &atributo);
 
 	erro = finalizaTabela(tDois);
 
@@ -51,7 +53,7 @@ int main(int rg, char *nomeTabela[]){
 	}
 
 
-/*
+
 	c = insereValor(c, "Nome", "Um");
 	c = insereValor(c, "Idade", "40");
 	c = insereValor(c, "Sexo", "F");
