@@ -20,7 +20,7 @@ struct fs_objects leObjeto(char *nTabela){
 		printf("Erro GRAVE! na função leObjeto(). Arquivo não encontrado.\nAbortando...\n\n");
 		exit(1);
 	}
-
+	
 
 	while(fgetc (dicionario) != EOF){
         fseek(dicionario, -1, 1);
@@ -35,37 +35,54 @@ struct fs_objects leObjeto(char *nTabela){
       		strcpy(objeto.nArquivo, tupla);
       		fread(&cod,sizeof(int),1,dicionario);
       		objeto.qtdCampos = cod;
-
+      		
         	return objeto;
         }
         fseek(dicionario, 28, 1); // Pula a quantidade de caracteres para a proxima verificacao(4B do codigo, 20B do nome do arquivo e 4B da quantidade de campos).
 	}
 	return objeto;
 }
+
 tp_table *leSchema (struct fs_objects objeto){
 	FILE *schema;
 	int i = 0, cod;
 	char *tupla = (char *)malloc(sizeof(char)*TAMANHO_NOME_CAMPO);
 	tp_table *esquema = (tp_table *)malloc(sizeof(tp_table)*objeto.qtdCampos); // Aloca esquema com a quantidade de campos necessarios.
-
+//printf("\n -------1 entro no leSchema-----");
 	if(esquema == NULL)
 		return ERRO_DE_ALOCACAO;
 
 	schema = fopen("fs_schema.dat", "a+b"); // Abre o arquivo de esquemas de tabelas.
-
+//printf("\n -----2-------");
 	if (schema == NULL)
 		return ERRO_ABRIR_ESQUEMA;
-
+//printf("\n --3----------");
 	while((fgetc (schema) != EOF) && (i < objeto.qtdCampos)){ // Varre o arquivo ate encontrar todos os campos com o codigo da tabela.
         fseek(schema, -1, 1);
-
+//printf("\n ----4--------");
         if(fread(&cod, sizeof(int), 1, schema)){ // Le o codigo da tabela.
         	if(cod == objeto.cod){ // Verifica se o campo a ser copiado e da tabela que esta na estrutura fs_objects.
-
+//printf("\n -----5-------");
         		fread(tupla, sizeof(char), TAMANHO_NOME_CAMPO, schema);
         		strcpy(esquema[i].nome,tupla);					// Copia dados do campo para o esquema.
         		fread(&esquema[i].tipo, sizeof(char),1,schema);
         		fread(&esquema[i].tam, sizeof(int),1,schema);
+        		fread(&esquema[i].tp_Chave.tpChave, sizeof(int),1,schema); //lê o tipo da chave do atributo
+        		printf("\n -----------------------antes teste leitura fim tipo: %d = %lu ",esquema[i].tp_Chave.tpChave,sizeof(esquema[i].tp_Chave.tpChave));
+        		//verifica se for do tipo chave estrangeira ele vai ler
+        		if(esquema[i].tp_Chave.tpChave == 3 )
+        		{	
+					fread(&esquema[i].tp_Chave.nomeTabelaF, sizeof(esquema[i].tp_Chave.nomeTabelaF),1,schema);
+					fread(&esquema[i].tp_Chave.nomeCampoF, sizeof(esquema[i].tp_Chave.nomeCampoF),1,schema);
+					printf("\n simm ----nome leitura campo FK: %s = %lu  \n",esquema[i].tp_Chave.nomeCampoF,sizeof(esquema[i].tp_Chave.nomeCampoF));
+					printf("\n simm ----nome leitura tabela FK: %s = %lu ",esquema[i].tp_Chave.nomeTabelaF,sizeof(esquema[i].tp_Chave.nomeTabelaF));
+					//printf("\n teste leitura fim tipo: %d = %lu ",esquema[i].tp_Chave.tpChave,sizeof(esquema[i].tp_Chave.tpChave));
+					printf("\n -----7-------");
+				}else if(esquema[i].tp_Chave.tpChave != 1 && esquema[i].tp_Chave.tpChave != 2)
+				{
+					printf("\n -----8-------");
+					return ERRO_DE_LEITURA;
+				}
         		i++;
         	}
         	else
@@ -766,5 +783,5 @@ int *excluiTabela(char *nomeTabela){
 }
 
 int verificaFK(tipoChave *tpChave){
-return SUCCESS;	
+	return SUCCESS;	
 }

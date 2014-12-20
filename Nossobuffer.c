@@ -1,12 +1,13 @@
 #include "buffend.h"
 
-int main(int rg, char *nomeTabela[]){
+int main(){
 
 	int erro;
 	//table *tDois = NULL;
 	table *t = NULL;
-	//column *c = NULL;
+	column *c = NULL;
 	tipoChave atributo;
+	//char temp[20];
 
 	t = iniciaTabela("Profissao");
 	if(t == ERRO_NOME_TABELA_INVALIDO){
@@ -19,6 +20,9 @@ int main(int rg, char *nomeTabela[]){
 	t = adicionaCampo(t, "descricao", 'S', 30, &atributo);
 	t = adicionaCampo(t, "competencia", 'I', (sizeof(int)), &atributo);
 	t = adicionaCampo(t, "experiencia", 'S', 25, &atributo);
+		//atributo.tpChave = 3;
+		//strcpy(atributo.nomeTabelaF, "Profissao");
+		//strcpy(atributo.nomeCampoF, "Nome");
 	t = adicionaCampo(t, "testeChar", 'C', (sizeof(char)), &atributo);
 	
 
@@ -29,7 +33,9 @@ int main(int rg, char *nomeTabela[]){
 		printf("Erro %d: na função finalizaTabela() - 1.\n", erro);
 		return 0;
 	}
+	
 /*
+	tDois = NULL;
 	//inicia a tabela pessoa tendo como fk a profissao
 	tDois = iniciaTabela("Pessoa");
 		atributo.tpChave = 1;
@@ -40,9 +46,9 @@ int main(int rg, char *nomeTabela[]){
 	//tDois = adicionaCampo(tDois, "Obs", 'S', 40, &atributo);
 	//tDois = adicionaCampo(tDois, "Media", 'D', 10, &atributo); //aqui ta gravando lixo deve ser por causa do tipo
 
-		atributo.tpChave = 3;
-		strcpy(atributo.nomeTabelaF, "Profissao");
-		strcpy(atributo.nomeCampoF, "Nome");
+		//atributo.tpChave = 3;
+		//strcpy(atributo.nomeTabelaF, "Profissao");
+		//strcpy(atributo.nomeCampoF, "Nome");
 	tDois = adicionaCampo(tDois, "profissao", 'S', 20, &atributo);
 
 	erro = finalizaTabela(tDois);
@@ -52,39 +58,49 @@ int main(int rg, char *nomeTabela[]){
 		return 0;
 	}
 
+	struct fs_objects objeto = leObjeto("Pessoa");
+	tp_table *esquema = leSchema(objeto);
 
 
-	c = insereValor(c, "Nome", "Um");
-	c = insereValor(c, "Idade", "40");
-	c = insereValor(c, "Sexo", "F");
-	c = insereValor(c, "Obs", "Obs. Um");
-	c = insereValor(c, "Media", "2.5");
+	struct fs_objects objeto2 = leObjeto("Profissao");
+	tp_table *esquema2 = leSchema(objeto2);
+	
+	t = getTabela(temp);
+	if(t == NULL){
+		printf("Deu erro");
+	}
+*/
+	c = insereValor(c, "Nome", "Um", &atributo);
+	c = insereValor(c, "Idade", "40", &atributo);
+	c = insereValor(c, "Sexo", "F", &atributo);
+	c = insereValor(c, "Obs", "Obs. Um", &atributo);
+	c = insereValor(c, "Media", "2.5", &atributo);
 
 
-	c = insereValor(c, "Nome", "Dois");
-	c = insereValor(c, "Idade", "20");
-	c = insereValor(c, "Sexo", "M");
-	c = insereValor(c, "Obs", "Obs. Dois");
-	c = insereValor(c, "Media", "1.67");
+	c = insereValor(c, "Nome", "Dois", &atributo);
+	c = insereValor(c, "Idade", "20", &atributo);
+	c = insereValor(c, "Sexo", "M", &atributo);
+	c = insereValor(c, "Obs", "Obs. Dois", &atributo);
+	c = insereValor(c, "Media", "1.67", &atributo);
 
-	c = insereValor(c, "Nome", "Três");
-	c = insereValor(c, "Idade", "30");
-	c = insereValor(c, "Sexo", "F");
-	c = insereValor(c, "Obs", "Obs. Três");
-	c = insereValor(c, "Media", "1.456");
+	c = insereValor(c, "Nome", "Três", &atributo);
+	c = insereValor(c, "Idade", "30", &atributo);
+	c = insereValor(c, "Sexo", "F", &atributo);
+	c = insereValor(c, "Obs", "Obs. Três", &atributo);
+	c = insereValor(c, "Media", "1.456", &atributo);
 
-	erro = finalizaInsert("Pessoa", c);
+	erro = finalizaInsert("Profissao", c);
 
 	if(erro != SUCCESS){
 		printf("Erro %d: na função finalizaInsert()\n", erro);
 		return 0;
 	}
 
-
+/*
 	if(rg == 1){
 		printf("Erro: nome de tabela nao inserido na linha de comando.\n");
 		return 0;
-	}
+	
 
 	struct fs_objects objeto = leObjeto(nomeTabela[1]);
 
