@@ -7,69 +7,29 @@ int main(){
 	table *t = NULL;
 	column *c = NULL;
 	tipoChave atributo;
-	//char temp[20];
+	char nomeTabela[20] = "pessoa";
+	
+	t = iniciaTabela(nomeTabela);
 
-	t = iniciaTabela("Profissao");
 	if(t == ERRO_NOME_TABELA_INVALIDO){
 		printf("Erro: na função iniciaTabela(). Nome da tabela já existente.\n");
 		return 0;
 	}
-		atributo.tpChave = 1;
+	atributo.tpChave = 1;
 	t = adicionaCampo(t, "Nome", 'S', 20, &atributo);
-		atributo.tpChave = 2;
-	t = adicionaCampo(t, "descricao", 'S', 30, &atributo);
-	t = adicionaCampo(t, "competencia", 'I', (sizeof(int)), &atributo);
-	t = adicionaCampo(t, "experiencia", 'S', 25, &atributo);
-		//atributo.tpChave = 3;
-		//strcpy(atributo.nomeTabelaF, "Profissao");
-		//strcpy(atributo.nomeCampoF, "Nome");
-	t = adicionaCampo(t, "testeChar", 'C', (sizeof(char)), &atributo);
-	
+	t = adicionaCampo(t, "Idade", 'I', (sizeof(int)), &atributo);
+	t = adicionaCampo(t, "Sexo", 'C', (sizeof(char)), &atributo);
+	t = adicionaCampo(t, "Obs", 'S', 40, &atributo);
+	t = adicionaCampo(t, "Media", 'D', (sizeof(double)), &atributo);
 
 	erro = finalizaTabela(t);
 
-	//t = NULL;
 	if(erro != SUCCESS){
-		printf("Erro %d: na função finalizaTabela() - 1.\n", erro);
+		printf("Erro %d: na função finalizaTabela().\n", erro);
 		return 0;
 	}
 	
-/*
-	tDois = NULL;
-	//inicia a tabela pessoa tendo como fk a profissao
-	tDois = iniciaTabela("Pessoa");
-		atributo.tpChave = 1;
-	tDois = adicionaCampo(tDois, "Nome", 'S', 20, &atributo);
-		//atributo.tpChave = 2;
-	//tDois = adicionaCampo(tDois, "Idade", 'I', (sizeof(int)), &atributo);
-	//tDois = adicionaCampo(tDois, "Sexo", 'C', (sizeof(char)), &atributo);
-	//tDois = adicionaCampo(tDois, "Obs", 'S', 40, &atributo);
-	//tDois = adicionaCampo(tDois, "Media", 'D', 10, &atributo); //aqui ta gravando lixo deve ser por causa do tipo
 
-		//atributo.tpChave = 3;
-		//strcpy(atributo.nomeTabelaF, "Profissao");
-		//strcpy(atributo.nomeCampoF, "Nome");
-	tDois = adicionaCampo(tDois, "profissao", 'S', 20, &atributo);
-
-	erro = finalizaTabela(tDois);
-
-	if(erro != SUCCESS){
-		printf("Erro %d: na função finalizaTabela() - 2.\n", erro);
-		return 0;
-	}
-
-	struct fs_objects objeto = leObjeto("Pessoa");
-	tp_table *esquema = leSchema(objeto);
-
-
-	struct fs_objects objeto2 = leObjeto("Profissao");
-	tp_table *esquema2 = leSchema(objeto2);
-	
-	t = getTabela(temp);
-	if(t == NULL){
-		printf("Deu erro");
-	}
-*/
 	c = insereValor(c, "Nome", "Um", &atributo);
 	c = insereValor(c, "Idade", "40", &atributo);
 	c = insereValor(c, "Sexo", "F", &atributo);
@@ -89,7 +49,7 @@ int main(){
 	c = insereValor(c, "Obs", "Obs. Três", &atributo);
 	c = insereValor(c, "Media", "1.456", &atributo);
 
-	erro = finalizaInsert("Profissao", c);
+	erro = finalizaInsert(nomeTabela, c);
 
 	if(erro != SUCCESS){
 		printf("Erro %d: na função finalizaInsert()\n", erro);

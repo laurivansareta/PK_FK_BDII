@@ -3,7 +3,7 @@
 #include <stdio.h>
 // LEITURA DE DICIONARIO E ESQUEMA.
 struct fs_objects leObjeto(char *nTabela){
-
+printf("\n -------1 entro no leObjeto-----");
 	FILE *dicionario;
 	char *tupla = (char *)malloc(sizeof(char)*TAMANHO_NOME_TABELA);
 	int cod;
@@ -48,7 +48,7 @@ tp_table *leSchema (struct fs_objects objeto){
 	int i = 0, cod;
 	char *tupla = (char *)malloc(sizeof(char)*TAMANHO_NOME_CAMPO);
 	tp_table *esquema = (tp_table *)malloc(sizeof(tp_table)*objeto.qtdCampos); // Aloca esquema com a quantidade de campos necessarios.
-//printf("\n -------1 entro no leSchema-----");
+printf("\n -------1 entro no leSchema-----");
 	if(esquema == NULL)
 		return ERRO_DE_ALOCACAO;
 
@@ -517,7 +517,7 @@ int finalizaTabela(table *t)
 // INSERE NA TABELA
 column *insereValor(column *c, char *nomeCampo, char *valorCampo, tipoChave *tpChave)
 {
-
+printf("\n-----entro INSERE VALOR");
 	column *aux;
 	if(c == NULL) // Se o valor a ser inserido é o primeiro, adiciona primeiro campo.
 	{
@@ -556,7 +556,7 @@ int finalizaInsert(char *nome, column *c)
 	int i = 0, x = 0, t;
 	FILE *dados;
 
-
+printf("\n-----entro finaliza insert");
 	struct fs_objects dicio = leObjeto(nome); // Le dicionario
 	tp_table *auxT = leSchema(dicio); // Le esquema
 
@@ -567,8 +567,9 @@ int finalizaInsert(char *nome, column *c)
 	{
 		if(t >= dicio.qtdCampos)
 			t = 0;
-
+//printf("\n -------pega tipo no finaliza tam:%d--qtCampos:%d---\n",auxT[t].tam,dicio.qtdCampos);
 		if(auxT[t].tipo == 'S'){ // Grava um dado do tipo string.
+printf("\n -------0 entro no finalizaInsert str-----nome:%s -> valor:%s\n",auxT[t].nome, auxC->nomeCampo);
 			if(sizeof(auxC->valorCampo) > auxT[t].tam){
 				return ERRO_NO_TAMANHO_STRING;
 			}
@@ -582,6 +583,7 @@ int finalizaInsert(char *nome, column *c)
 		}
 		else if(auxT[t].tipo == 'I'){ // Grava um dado do tipo inteiro.
 			i = 0;
+printf("\n -------1 entro no finalizaInsert Int-----nome:%s -> valor:%s\n",auxT[t].nome, auxC->nomeCampo);
 			while (i < strlen(auxC->valorCampo))
 			{
 				if(auxC->valorCampo[i] < 48 || auxC->valorCampo[i] > 57){
@@ -595,6 +597,7 @@ int finalizaInsert(char *nome, column *c)
 		}
 		else if(auxT[t].tipo == 'D'){ // Grava um dado do tipo double.
 			x = 0;
+printf("\n -------2 entro no finalizaInsert Dou-----nome:%s -> valor:%s\n",auxT[t].nome, auxC->nomeCampo);
 			while (x < strlen(auxC->valorCampo))
 			{
 				if((auxC->valorCampo[x] < 48 || auxC->valorCampo[x] > 57) && (auxC->valorCampo[x] != 46)){
@@ -607,7 +610,7 @@ int finalizaInsert(char *nome, column *c)
 			fwrite(&valorDouble,sizeof(valorDouble),1,dados);
 		}
 		else if(auxT[t].tipo == 'C'){ // Grava um dado do tipo char.
-
+printf("\n -------3 entro no finalizaInsert char-----nome:%s -> valor:%s\n",auxT[t].nome, auxC->nomeCampo);
 			if(strlen(auxC->valorCampo) > (sizeof(char)))
 			{
 				return ERRO_NO_TIPO_CHAR;
@@ -663,7 +666,7 @@ column * excluirTuplaBuffer(tp_buffer *buffer, tp_table *campos, struct fs_objec
 //----------------------------------------
 // RETORNA PAGINA DO BUFFER
 column * getPage(tp_buffer *buffer, tp_table *campos, struct fs_objects objeto, int page){
-
+printf("\n-----entro getPage----");
 	if(page > PAGES)
 		return ERRO_PAGINA_INVALIDA;
 
