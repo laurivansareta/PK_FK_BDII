@@ -77,8 +77,6 @@ tp_table *leSchema (struct fs_objects objeto){
 					fread(&esquema[i].tp_Chave.nomeTabelaF, sizeof(esquema[i].tp_Chave.nomeTabelaF),1,schema);
 					fread(&esquema[i].tp_Chave.nomeCampoF, sizeof(esquema[i].tp_Chave.nomeCampoF),1,schema);
 					avancar = 49 + sizeof(esquema[i].tp_Chave.nomeTabelaF) +  sizeof(esquema[i].tp_Chave.nomeCampoF);
-					printf("\n simm ----nome leitura campo FK: %s = %lu  \n",esquema[i].tp_Chave.nomeCampoF,sizeof(esquema[i].tp_Chave.nomeCampoF));
-					printf("\n simm ----nome leitura tabela FK: %s = %lu ",esquema[i].tp_Chave.nomeTabelaF,sizeof(esquema[i].tp_Chave.nomeTabelaF));
 					
 				}
         		i++;
