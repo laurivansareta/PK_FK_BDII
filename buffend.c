@@ -3,7 +3,7 @@
 #include <stdio.h>
 // LEITURA DE DICIONARIO E ESQUEMA.
 struct fs_objects leObjeto(char *nTabela){
-//printf("\n -------1 entro no leObjeto-----");
+
 	FILE *dicionario;
 	char *tupla = (char *)malloc(sizeof(char)*TAMANHO_NOME_TABELA);
 	int cod;
@@ -45,55 +45,50 @@ struct fs_objects leObjeto(char *nTabela){
 
 tp_table *leSchema (struct fs_objects objeto){
 	FILE *schema;
-	int i = 0, cod;
+	int i = 0, cod, avancar;
 	char *tupla = (char *)malloc(sizeof(char)*TAMANHO_NOME_CAMPO);
 	tp_table *esquema = (tp_table *)malloc(sizeof(tp_table)*objeto.qtdCampos); // Aloca esquema com a quantidade de campos necessarios.
-//printf("\n -------1 entro no leSchema-----");
+	
+	//quantidade de bytes que vai avancar
+	avancar = 49;
+	
 	if(esquema == NULL)
 		return ERRO_DE_ALOCACAO;
 
 	schema = fopen("fs_schema.dat", "a+b"); // Abre o arquivo de esquemas de tabelas.
-//printf("\n -----2-------");
+
 	if (schema == NULL)
 		return ERRO_ABRIR_ESQUEMA;
-//printf("\n --3----------");
+
 	while((fgetc (schema) != EOF) && (i < objeto.qtdCampos)){ // Varre o arquivo ate encontrar todos os campos com o codigo da tabela.
         fseek(schema, -1, 1);
-//printf("\n ----4--------");
+
         if(fread(&cod, sizeof(int), 1, schema)){ // Le o codigo da tabela.
-			printf("\n -----cod tabela lido:%d----obj:%d---",cod, objeto.cod);
         	if(cod == objeto.cod){ // Verifica se o campo a ser copiado e da tabela que esta na estrutura fs_objects.
-//printf("\n -----5-------");
         		fread(tupla, sizeof(char), TAMANHO_NOME_CAMPO, schema);
         		strcpy(esquema[i].nome,tupla);					// Copia dados do campo para o esquema.
-        		//printf("lendo nome arquivo:%c",esquema[i].nome);
         		fread(&esquema[i].tipo, sizeof(char),1,schema);
-        		//printf("lendo tipo arquivo:%c",esquema[i].tipo);
         		fread(&esquema[i].tam, sizeof(int),1,schema);
-        		//printf("lendo tam arquivo:%d",esquema[i].tam);
         		fread(&esquema[i].tp_Chave.tpChave, sizeof(int),1,schema); //lê o tipo da chave do atributo
-        		printf("\n -----------------------antes teste leitura fim tipo: %d = %lu ",esquema[i].tp_Chave.tpChave,sizeof(esquema[i].tp_Chave.tpChave));
+        		avancar = 49;
         		//verifica se for do tipo chave estrangeira ele vai ler
         		if(esquema[i].tp_Chave.tpChave == 3 )
         		{	
 					fread(&esquema[i].tp_Chave.nomeTabelaF, sizeof(esquema[i].tp_Chave.nomeTabelaF),1,schema);
 					fread(&esquema[i].tp_Chave.nomeCampoF, sizeof(esquema[i].tp_Chave.nomeCampoF),1,schema);
+					avancar = 49 + sizeof(esquema[i].tp_Chave.nomeTabelaF) +  sizeof(esquema[i].tp_Chave.nomeCampoF);
 					printf("\n simm ----nome leitura campo FK: %s = %lu  \n",esquema[i].tp_Chave.nomeCampoF,sizeof(esquema[i].tp_Chave.nomeCampoF));
 					printf("\n simm ----nome leitura tabela FK: %s = %lu ",esquema[i].tp_Chave.nomeTabelaF,sizeof(esquema[i].tp_Chave.nomeTabelaF));
-					//printf("\n teste leitura fim tipo: %d = %lu ",esquema[i].tp_Chave.tpChave,sizeof(esquema[i].tp_Chave.tpChave));
-					printf("\n -----7-------");
-				}//else if(esquema[i].tp_Chave.tpChave != 1 && esquema[i].tp_Chave.tpChave != 2)
-				//{
-				//	printf("\n -----8-------");
-					//return ERRO_DE_LEITURA;
-				//}
+					
+				}
         		i++;
         	}
         	else
-        		fseek(schema, 45, 1); // Pula a quantidade de caracteres para a proxima verificacao (40B do nome, 1B do tipo e 4B do tamanho).
+        		fseek(schema, avancar, 1); // Pula a quantidade de caracteres para a proxima verificacao (40B do nome, 1B do tipo e 4B do tamanho).
         }
 
     }
+    fclose(schema);
     return esquema;
 }
 //--------------------------------------------------
@@ -456,35 +451,21 @@ int finalizaTabela(table *t)
 
 	for(aux = t->esquema; aux!=NULL; aux = aux->next) // Salva novos campos no esquema da tabela, fs_schema.dat
 	{	
-		printf("\n cod tabela: %d = %lu ",codTbl,sizeof(codTbl));
 		fwrite(&codTbl,sizeof(codTbl),1,esquema);
-		
-		printf("\n nome: %s = %lu ",aux->nome,sizeof(aux->nome));
 		fwrite(&aux->nome,sizeof(aux->nome),1,esquema);
-		
-		printf("\n tipo: %c = %lu ",aux->tipo,sizeof(aux->tipo));
 		fwrite(&aux->tipo,sizeof(aux->tipo),1,esquema);
-		
-		printf("\n tamanho: %d = %lu ",aux->tam,sizeof(aux->tam));
 		fwrite(&aux->tam,sizeof(aux->tam),1,esquema);
 		if (aux->tp_Chave.tpChave == 1 || aux->tp_Chave.tpChave == 2)
 		{
-			printf("\n teste fim tipo: %d = %lu \n", aux->tp_Chave.tpChave, (sizeof(aux->tp_Chave.tpChave)));
 			fwrite(&aux->tp_Chave.tpChave,sizeof(aux->tp_Chave.tpChave),1,esquema);
 
 		}else if (aux->tp_Chave.tpChave == 3 )
 		{	
-			//int temp = verificaTabAtr(aux->tp_Chave.nomeTabelaF, aux->tp_Chave.nomeCampoF);
-			int temp = SUCCESS;
+			int temp = verificaTabAtr(aux->tp_Chave.nomeTabelaF, aux->tp_Chave.nomeCampoF);
 			if( temp == SUCCESS )
 			{	
-				printf("\n teste fim tipo: %d = %lu ",aux->tp_Chave.tpChave,sizeof(aux->tp_Chave.tpChave));
 				fwrite(&aux->tp_Chave.tpChave,sizeof(aux->tp_Chave.tpChave),1,esquema);
-				
-				printf("\n nome tabela FK: %s = %lu ",aux->tp_Chave.nomeTabelaF,sizeof(aux->tp_Chave.nomeTabelaF));
 				fwrite(&aux->tp_Chave.nomeTabelaF,sizeof(aux->tp_Chave.nomeTabelaF),1,esquema);
-				
-				printf("\n nome campo FK: %s = %lu  \n",aux->tp_Chave.nomeCampoF,sizeof(aux->tp_Chave.nomeCampoF));
 				fwrite(&aux->tp_Chave.nomeCampoF,sizeof(aux->tp_Chave.nomeCampoF),1,esquema);
 			}else if(temp == FK_NAO_EXISTE ){
 				return FK_NAO_EXISTE;
@@ -517,7 +498,6 @@ int finalizaTabela(table *t)
 // INSERE NA TABELA
 column *insereValor(column *c, char *nomeCampo, char *valorCampo)
 {
-	//tipoChave *tpChave;
 	column *aux;
 	if(c == NULL) // Se o valor a ser inserido é o primeiro, adiciona primeiro campo.
 	{
@@ -525,7 +505,6 @@ column *insereValor(column *c, char *nomeCampo, char *valorCampo)
 		e->valorCampo = (char *)malloc(sizeof(char) * (sizeof(valorCampo)));
 		strcpy(e->nomeCampo, nomeCampo);
 		strcpy(e->valorCampo, valorCampo);
-		//e->tp_Chave = *tpChave;
 		e->next = NULL;
 		c = e;
 		return c;
@@ -541,7 +520,6 @@ column *insereValor(column *c, char *nomeCampo, char *valorCampo)
 				e->next = NULL;
 				strcpy(e->nomeCampo, nomeCampo);
 				strcpy(e->valorCampo, valorCampo);
-				//e->tp_Chave = *tpChave;
 				aux->next = e;
 				return c;
 			}
@@ -587,7 +565,6 @@ int finalizaInsert(char *nome, column *c)
 			
 			
 		if(auxT[t].tipo == 'S' && retorno == SUCCESS){ // Grava um dado do tipo string.
-//printf("\n -------0 entro no finalizaInsert str-----nome:%s -> valor:%s\n",auxT[t].nome, auxC->nomeCampo);
 			if(sizeof(auxC->valorCampo) > auxT[t].tam){
 				return ERRO_NO_TAMANHO_STRING;
 			}
@@ -598,11 +575,9 @@ int finalizaInsert(char *nome, column *c)
 			strcpy(valorCampo, auxC->valorCampo);
 			strcat(valorCampo, "\0");
 			fwrite(&valorCampo,sizeof(valorCampo),1,dados);
-			//printf("\n gravando:%s",valorCampo);
 		}
 		else if(auxT[t].tipo == 'I' && retorno == SUCCESS){ // Grava um dado do tipo inteiro.
 			i = 0;
-//printf("\n -------1 entro no finalizaInsert Int-----nome:%s -> valor:%s\n",auxT[t].nome, auxC->nomeCampo);
 			while (i < strlen(auxC->valorCampo))
 			{
 				if(auxC->valorCampo[i] < 48 || auxC->valorCampo[i] > 57){
@@ -613,11 +588,9 @@ int finalizaInsert(char *nome, column *c)
 
 			int valorInteiro = convertI(auxC->valorCampo);
 			fwrite(&valorInteiro,sizeof(valorInteiro),1,dados);
-			//printf("\n gravando:%d",valorInteiro);
 		}
 		else if(auxT[t].tipo == 'D' && retorno == SUCCESS ){ // Grava um dado do tipo double.
 			x = 0;
-//printf("\n -------2 entro no finalizaInsert Dou-----nome:%s -> valor:%s\n",auxT[t].nome, auxC->nomeCampo);
 			while (x < strlen(auxC->valorCampo))
 			{
 				if((auxC->valorCampo[x] < 48 || auxC->valorCampo[x] > 57) && (auxC->valorCampo[x] != 46)){
@@ -628,17 +601,14 @@ int finalizaInsert(char *nome, column *c)
 
 			double valorDouble = convertD(auxC->valorCampo);
 			fwrite(&valorDouble,sizeof(valorDouble),1,dados);
-			//printf("\n gravando:%f",valorDouble);
 		}
 		else if(auxT[t].tipo == 'C' && retorno == SUCCESS){ // Grava um dado do tipo char.
-//printf("\n -------3 entro no finalizaInsert char-----nome:%s -> valor:%s\n",auxT[t].nome, auxC->nomeCampo);
 			if(strlen(auxC->valorCampo) > (sizeof(char)))
 			{
 				return ERRO_NO_TIPO_CHAR;
 			}
 			char valorChar = auxC->valorCampo[0];
 			fwrite(&valorChar,sizeof(valorChar),1,dados);
-			//printf("\n gravando:%s",valorChar);
 		}
 
 	}
@@ -688,7 +658,6 @@ column * excluirTuplaBuffer(tp_buffer *buffer, tp_table *campos, struct fs_objec
 //----------------------------------------
 // RETORNA PAGINA DO BUFFER
 column * getPage(tp_buffer *buffer, tp_table *campos, struct fs_objects objeto, int page){
-printf("\n-----entro getPage----");
 	if(page > PAGES)
 		return ERRO_PAGINA_INVALIDA;
 
@@ -770,7 +739,7 @@ table *getTabela(char *nomeTabela){
 		//carrega as informações do disco para a struct tabela e a retorna;
 		struct fs_objects objeto = leObjeto(nomeTabela);
 		tp_table *esquema = leSchema(objeto);
-		table *tabela = NULL;
+		table *tabela= (table *)malloc(sizeof(table));
 		strcpy(tabela->nome, nomeTabela);
 		tabela->esquema = esquema;
 
@@ -785,48 +754,47 @@ table *getTabela(char *nomeTabela){
 }
 //passa o nome da tabela a ser excluida e retorna um int com a situação
 int excluiTabela(char *nomeTabela){
-	char tempNome[TAMANHO_NOME_TABELA];
-	strcat(tempNome,nomeTabela);
-	strcat(tempNome,".dat");
+	int aux;
+	FILE *dicionario, *arq;
+	char *tupla = (char *)malloc(sizeof(char)*TAMANHO_NOME_TABELA);
+	char nomeArq[TAMANHO_NOME_TABELA] = "";
+	strcat(nomeArq,nomeTabela);
+	strcat(nomeArq,".dat");
 	
-	if(verificaNomeTabela(nomeTabela) == 1 )
-	{
-	//	struct fs_objects objeto;
-		//tp_table *esquema;																																																																																					
-		FILE *discionario, *tabela;
-		//tenta carregar o arquivo, caso nao exista ja retorna sucesso pois estava tentando excluir
-		if((tabela = fopen(tempNome,"a+b")) == NULL)
-		{	
-			//aqui somente apaga do discionário pois não tem arquivo
-			if((discionario = fopen("fs_object.dat","a+b")) == NULL){
-				return ERRO_ABRIR_ARQUIVO;
-			}else{
-					//implementar o fseek
-			}
-			
-			return SUCCESS;
-		}else{
-			//implementar a exclusão no discionário 
-			//para apagar do arquivo usar fseek
-			//apagar arquvivo funcao remove(arq.txt)
-			if((discionario = fopen("fs_object.dat","a+b")) == NULL){
-				return ERRO_ABRIR_ARQUIVO;
-			}else{
-				remove(tempNome);
-				//implementar o fseek
-				return SUCCESS;
-			}
-		}
-	}else{
-		//tenta remover so pra garantir
-		remove(tempNome);
-		return ERRO_NOME_TABELA;
-	}
-	return SUCCESS;
-}
+	if((dicionario = fopen("fs_object.dat","a+b")) == NULL){
+    	return ERRO_ABRIR_ARQUIVO;
+    }
+    
+    //if((dc_temp = fopen("fs_temp.dat", "a+b")) == NULL){
+     //   return ERRO_ABRIR_ARQUIVO;
+  //  }
 
-int verificaFK(tipoChave *tpChave){
-	return SUCCESS;	
+    
+    aux = quantidadeTabelas();
+    while(aux > 0){
+        fseek(dicionario, -1, 1);
+        //fseek(dc_temp, 0, SEEK_SET);
+        
+        fread(tupla, sizeof(char), TAMANHO_NOME_TABELA, dicionario); //Lê somente o nome da tabela
+
+        if(strcmp(tupla, nomeTabela) == 0){ // Verifica se o nome dado pelo usuario existe no dicionario de dados.
+			if((arq = fopen(nomeArq,"a+b")) != NULL){
+				fclose(arq);
+				remove(nomeArq);
+			}
+        	
+        }else{
+			//fwrite(tupla, sizeof(char), 28, dc_temp); 
+		}
+		aux--;
+       // fseek(dicionario, 28, 1);
+ 	}
+
+ 	fclose(dicionario);
+ 	//fclose(dc_temp);
+ 	//remove("fs_object.dat");
+    //system("mv fs_temp.dat fs_object.dat");
+ 	return 0;
 }
 
 int verificaValor(char *nomeTabela, char *nomeCampo, char *valor){
