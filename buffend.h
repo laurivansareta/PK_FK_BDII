@@ -159,7 +159,7 @@ int finalizaTabela(table *t);
 	*nomeCampo - Nome do campo que o usuário vai inserir um valor.
 	*valorCampo - Valor do campo que vai ser inserido.
 */
-column *insereValor(column *c, char *nomeCampo, char *valorCampo, tipoChave *tpChave);
+column *insereValor(column *c, char *nomeCampo, char *valorCampo);
 /*
 	Esta função finaliza a inserção de valores em uma tabela. Assume que o usuário entrou com todos os campos de uma tupla completa.
 	Retorna: 
@@ -208,7 +208,7 @@ column * excluirTuplaBuffer(tp_buffer *buffer, tp_table *campos, struct fs_objec
 	struct do tipo table que conterá a tabela
 	NULL caso retorne null a tabela não existe ou ocorreu algum erro
    */
-  int *excluiTabela(char *nomeTabela);
+  int excluiTabela(char *nomeTabela);
   /*
    passa o nome da tabela a ser excluida e retorna um int com a situação
    RETORNOS:
@@ -225,3 +225,9 @@ column * excluirTuplaBuffer(tp_buffer *buffer, tp_table *campos, struct fs_objec
     ERRO_ATRIB_NAO_EXISTENTE quando o atrributo for inexistente
     ERRO_VIOLACAO_FK quando não tiver o valor
     */
+    int verificaValor(char *nomeTabela, char *nomeCampo, char *valor);
+    /*
+     Recebendo os parametros faz a verificação se a tabela, atributo e valor existe na mesma
+     RETORNOS
+     SUCCESS caso encontre
+     */
