@@ -21,7 +21,8 @@ Sobre o dicionário de dados e o esquema:
 	typedef struct tp_table{ // Estrutura usada para carregar fs_schema.dat
 		char nome[TAMANHO_NOME_CAMPO];	
 		char tipo;						
-		int tam;						
+		int tam;	
+		struct tipoChave tp_Chave;					
 		struct tp_table *next;	
 	}tp_table;
 
@@ -45,15 +46,23 @@ Sobre a criação e inserção em tabelas:
 	Após a criação de uma istância de 'table' é necessário iniciá-la com o nome da tabla a ser criada usando a função iniciaTabela(nomeTabela):
 
 		table *t = NULL;
+		tipoChave atributo;
 		t = iniciaTabela("Pessoa");
 
-	A partir da iniciação da tabela, pode-se adicionar os campos utilizando a função adicionaCampo(t, nomeCampo, tipoCampo, tamanhoCampo):
-
-		t = adicionaCampo(t, "Nome", 'S', 20); // Cria um campo de nome 'Nome' do tipo string e de tamanho 20
-		t = adicionaCampo(t, "Idade", 'I', 4); // Cria um campo de nome 'Idade' do tipo inteiro e de tamanho 4
-
+	A partir da iniciação da tabela, pode-se adicionar os campos utilizando a função adicionaCampo(t, nomeCampo, tipoCampo, tamanhoCampo, tipoChave):
+		
+		atributo.tpChave = 1; // os tipos de chave são 1- Normal 2 - primária 3 - Estrangeira
+		//para quando for estrangeira é obrigatório colocar o nome da tabela e campo
+		atributo.nomeTabelaF = nomeTabela;
+		atributo.nomeCampoF = nomeCampo;
+		t = adicionaCampo(t, "Nome", 'S', 20, atributo ); // Cria um campo de nome 'Nome' do tipo string e de tamanho 20
+		t = adicionaCampo(t, "Idade", 'I', 4, atributo ); // Cria um campo de nome 'Idade' do tipo inteiro e de tamanho 4
+	
+	
 	Agora, para a tabela ser finalmente adicionada ao dicionário de dados e ao esquema, chama-se a função finalizaTabela(t);
-
+	OBS: Quando é chamado a função finaliza tabela a é feito a verificação do tipo da chave, se for estrangeira é feito a validação
+		se ja existe no dicionario ele vai fazer a insersão no schema o nome da tabela e atributo estrangeiro para posteriormente fazer as validações na insersão.
+	
 	Criada a tabela, pode-se inserir os dados.
 	Quanto da inserção, é necessário criar uma estrutura do tipo 'column' que criará uma lista encadeada de valores a serem adicionados a tabela.
 	Para adicionar uma tupla na tabela, é preciso inserir valor por valor de cada campo chamando a função insereValor(c, nomeCampo, valorCampo):
@@ -63,10 +72,13 @@ Sobre a criação e inserção em tabelas:
 		c = insereValor(c, "Idade", "40");
 
 	OBS: A inserção dos dados deve ocorrer na sequência de criação de campo, sendo que não é possível realizar a inserção incompleta de uma tupla
-
+	
 	Assim, com os dados já adicionados na tabela, basta chamar a função finalizaInsert(nomeTabela, c) para gravar as tuplas no arquivo nomeTabela.dat, que armazena os dados referente a esta tabela:
 
 		finalizaInsert("Pessoa", c);
+
+	OBS: quando for feito o finaliza tabela o mesmo vai fazer a verificação em todos os itens inseridos se não violam algum tipo de chave
+		tanto a primaria quanto a estrangeira.
 
 Sobre inserir uma tupla no buffer:
 	Para adicionar uma tupla no buffer, realize o seguinte tendo já o bufferpoll, o esquema e o objeto devidamete inicializados:
@@ -85,7 +97,21 @@ Sobre excluir uma tupla do buffer e recuperar uma página do buffer:
 
 	A estrutura do tipo 'column' foi criada com o objetivo de armazenar os dados das tabelas, bem como para promover possíveis impressões de dados.
 
-
+------FUNÇÕES AUXILIARES--------------------
+	int verificaValor(char *nomeTabela, char *nomeCampo, char *valor);
+		função quando passado como parametro o nome de uma tabela existente, do campo e valor ela retorna SUCCESS quando 
+		todo existirem
+	
+	table *getTabela(char *nomeTabela);
+		passa como parametro o nome de uma tabela existente e retorna uma struct do tipo Table, ja com os dados carregados
+	
+	int excluiTabela(char *nomeTabela);
+		passa como parametro o nome de uma tabela e a mesma é excluida do disco
+		
+	int verificaTabAtr(char *nomeTabela, char *nomeCampo);
+		pasa como parametro nome da tabela já existente e campo, sendo que se os mesmos existirem retorna SUCCESS 
+	
+--------------------------------------------
 
 Da compilação:
 
